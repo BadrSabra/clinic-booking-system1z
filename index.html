@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام حجز مواعيد العيادات الذكي | الخليج</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;    /* أزرق طبي */
+            --secondary: #34a853;  /* أخضر تأكيد */
+            --accent: #fbbc04;     /* أصفر تحذير */
+            --dark: #202124;       /* أسود نص */
+            --light: #f8f9fa;      /* خلفية فاتحة */
+            --border: #dadce0;     /* حدود */
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* الشريط العلوي */
+        .navbar {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .cta-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            background-color: #0d62d9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3);
+        }
+        
+        /* قسم البطل */
+        .hero {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(26, 115, 232, 0.1) 0%, rgba(26, 115, 232, 0) 70%);
+            border-radius: 50%;
+        }
+        
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+            position: relative;
+        }
+        
+        .hero h1 span {
+            color: var(--primary);
+            position: relative;
+        }
+        
+        .hero h1 span::after {
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: rgba(52, 168, 83, 0.2);
+            z-index: -1;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            color: #5f6368;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        
+        .secondary-button {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(26, 115, 232, 0.05);
+        }
+        
+        /* قسم المميزات */
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--dark);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .feature-card {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border: 1px solid var(--border);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(26, 115, 232, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 32px;
+            color: var(--primary);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        /* قسم كيف يعمل */
+        .how-it-works {
+            padding: 100px 0;
+            background-color: #f8fafc;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            position: relative;
+        }
+        
+        .steps::before {
+            content: "";
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 80%;
+            height: 3px;
+            background-color: var(--primary);
+            z-index: 1;
+        }
+        
+        .step {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            width: 23%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        /* قسم التسعير */
+        .pricing {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .pricing-card {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.2);
+        }
+        
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            right: 50%;
+            transform: translateX(50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .pricing-header {
+            margin-bottom: 30px;
+        }
+        
+        .pricing-name {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .pricing-period {
+            color: #5f6368;
+            font-size: 1rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 40px;
+            text-align: right;
+        }
+        
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            padding-right: 30px;
+        }
+        
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing-features li i {
+            color: var(--secondary);
+            position: absolute;
+            right: 0;
+            top: 12px;
+        }
+        
+        /* قسم CTA نهائي */
+        .final-cta {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d62d9 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .final-cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        /* قسم الأسئلة الشائعة */
+        .faq {
+            padding: 100px 0;
+            background-color: #f8fafc;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+        
+        .faq-item {
+            background-color: white;
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s;
+        }
+        
+        .faq-answer {
+            padding: 0 25px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 25px 25px;
+        }
+        
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        
+        /* الفوتر */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 70px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #bdc1c6;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-right: 5px;
+        }
+        
+        .contact-info {
+            color: #bdc1c6;
+        }
+        
+        .contact-info p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bdc1c6;
+            font-size: 0.9rem;
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 992px) {
+            .steps {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+            }
+            
+            .steps::before {
+                display: none;
+            }
+            
+            .step {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid, .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* رسوم متحركة */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        /* تأثيرات إضافية */
+        .highlight {
+            background-color: rgba(251, 188, 4, 0.2);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .badge i {
+            color: var(--secondary);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <span>عيادتي الذكية</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#features">المميزات</a>
+                <a href="#how-it-works">كيف يعمل</a>
+                <a href="#pricing">الباقات</a>
+                <a href="#faq">الأسئلة الشائعة</a>
+            </div>
+            
+            <a href="#cta" class="cta-button">ابدأ مجاناً</a>
+        </div>
+    </nav>
+    
+    <!-- قسم البطل -->
+    <section class="hero">
+        <div class="container fade-in">
+            <h1>نظام <span>حجز مواعيد ذكي</span> لعيادتك في الخليج</h1>
+            <p>أول نظام حجز مواعيد في الخليج تدفع ثمنه <span class="highlight">فقط إذا أعجبك النظام</span>. طورنا نظاماً مخصصاً لعيادتك، تديره بأوامر بسيطة، وتحصل عليه بدون أي دفعة مقدمة.</p>
+            
+            <div class="hero-buttons">
+                <a href="https://replit.com/refer/badraldien111" target="_blank" class="cta-button">
+                    <i class="fas fa-rocket"></i> ابدأ الآن مجاناً
+                </a>
+                <a href="https://asset-management--badraldien111.replit.app" target="_blank" class="secondary-button">
+                    <i class="fas fa-eye"></i> شاهد النظام يعمل
+                </a>
+            </div>
+            
+            <div class="trust-badges">
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>أمن بيانات بمستوى البنوك</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-handshake"></i>
+                    <span>تدفع فقط بعد الرضا التام</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-headset"></i>
+                    <span>دعم فني باللغة العربية</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم المميزات -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">لماذا تختار نظامنا؟</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>أمن وسرية تامة</h3>
+                    <p>بيانات مرضاك محمية بتشفير متقدم وفق معايير HIPAA العالمية. أنت الوحيد الذي يملك الوصول الكامل.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>لا تدفع مقدماً</h3>
+                    <p>جرب النظام كاملاً، درّب فريقك، ثم ادفع فقط إذا أعجبك. لا مخاطرة مالية على الإطلاق.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>تعديلات بالأوامر</h3>
+                    <p>لا تحتاج لخبرة برمجية. فقط قل "أريد تغيير لون الزر إلى الأزرق" وسنقوم بالتعديل فوراً.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>يعمل على جميع الأجهزة</h3>
+                    <p>نظام متجاوب يعمل بكفاءة على الحواسيب، الأجهزة اللوحية، والهواتف الذكية.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>تقارير ذكية</h3>
+                    <p>احصل على تقارير أداء مفصلة تساعدك في اتخاذ قرارات أعمال ذكية لعيادتك.</p>
+                </div>
+                
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>مصمم للخليج</h3>
+                    <p>نظام مصمم خصيصاً ليتناسب مع تقاليد وثقافة العمل الطبي في دول الخليج العربي.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم كيف يعمل -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">كيف يعمل النظام؟</h2>
+            
+            <div class="steps">
+                <div class="step fade-in">
+                    <div class="step-number">1</div>
+                    <h3>سجل مجاناً</h3>
+                    <p>سجل من رابطنا في Replit. لا تحتاج لدفع أي مبلغ. التسجيل يستغرق 60 ثانية.</p>
+                </div>
+                
+                <div class="step fade-in">
+                    <div class="step-number">2</div>
+                    <h3>أرسل الدعوة</h3>
+                    <p>من داخل حسابك، أرسل دعوة لبريدنا الإلكتروني. أنت المالك الرسمي للمشروع.</p>
+                </div>
+                
+                <div class="step fade-in">
+                    <div class="step-number">3</div>
+                    <h3>شاهد التطوير</h3>
+                    <p>تابع بناء نظامك خطوة بخطوة على Replit. نعمل معاً حتى تصل للنتيجة المثالية.</p>
+                </div>
+                
+                <div class="step fade-in">
+                    <div class="step-number">4</div>
+                    <h3>ادفع إذا أعجبك</h3>
+                    <p>جرب النظام في عيادتك لمدة أسبوع. إذا أعجبك، ادفع. إذا لم يعجبك، لا تدفع.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم التسعير -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">باقاتنا الشفافة</h2>
+            <p style="text-align: center; margin-bottom: 40px; color: #5f6368; font-size: 1.1rem;">جميع الباقات تشمل <span class="highlight">ضمان الدفع بعد الرضا التام</span></p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card fade-in">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">الباقة الأساسية</h3>
+                        <div class="pricing-price">$1,500</div>
+                        <div class="pricing-period">دفعة واحدة بعد الرضا</div>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> نظام حجز مواعيد أساسي</li>
+                        <li><i class="fas fa-check"></i> لوحة تحكم سهلة الاستخدام</li>
+                        <li><i class="fas fa-check"></i> حتى 5 مستخدمين (أطباء/موظفين)</li>
+                        <li><i class="fas fa-check"></i> إشعارات عبر البريد الإلكتروني</li>
+                        <li><i class="fas fa-check"></i> دعم فني لمدة 30 يوم</li>
+                        <li><i class="fas fa-times" style="color: #ea4335;"></i> نظام دفع إلكتروني</li>
+                        <li><i class="fas fa-times" style="color: #ea4335;"></i> تطبيق جوال منفصل</li>
+                    </ul>
+                    
+                    <a href="https://replit.com/refer/badraldien111" target="_blank" class="cta-button" style="width: 100%;">اختر هذه الباقة</a>
+                </div>
+                
+                <div class="pricing-card featured fade-in">
+                    <div class="featured-badge">الأكثر طلباً</div>
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">الباقة المتكاملة</h3>
+                        <div class="pricing-price">$2,500</div>
+                        <div class="pricing-period">دفعة واحدة بعد الرضا</div>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> كل مميزات الباقة الأساسية</li>
+                        <li><i class="fas fa-check"></i> نظام دفع إلكتروني متكامل</li>
+                        <li><i class="fas fa-check"></i> تقارير أداء متقدمة</li>
+                        <li><i class="fas fa-check"></i> حتى 10 مستخدمين</li>
+                        <li><i class="fas fa-check"></i> تكامل مع واتساب للأشعارات</li>
+                        <li><i class="fas fa-check"></i> دعم فني لمدة 60 يوم</li>
+                        <li><i class="fas fa-check"></i> تدريب كامل للفريق</li>
+                    </ul>
+                    
+                    <a href="https://replit.com/refer/badraldien111" target="_blank" class="cta-button" style="width: 100%; background-color: var(--secondary);">اختر هذه الباقة</a>
+                </div>
+                
+                <div class="pricing-card fade-in">
+                    <div class="pricing-header">
+                        <h3 class="pricing-name">الباقة المتميزة</h3>
+                        <div class="pricing-price">$3,500</div>
+                        <div class="pricing-period">دفعة واحدة بعد الرضا</div>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> كل مميزات الباقة المتكاملة</li>
+                        <li><i class="fas fa-check"></i> تطبيق جوال خاص بالعيادة</li>
+                        <li><i class="fas fa-check"></i> عدد مستخدمين غير محدود</li>
+                        <li><i class="fas fa-check"></i> تكامل مع برامج المحاسبة</li>
+                        <li><i class="fas fa-check"></i> نظام مواعيد متعدد الفروع</li>
+                        <li><i class="fas fa-check"></i> دعم فني لمدة 90 يوم</li>
+                        <li><i class="fas fa-check"></i> استشارات تطوير مستمرة</li>
+                    </ul>
+                    
+                    <a href="https://replit.com/refer/badraldien111" target="_blank" class="cta-button" style="width: 100%;">اختر هذه الباقة</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم الأسئلة الشائعة -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">أسئلة شائعة</h2>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>هل أحتاج خبرة تقنية لاستخدام النظام؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>لا، النظام مصمم ليكون سهلاً مثل استخدام الواتساب. كل التعديلات تتم عن طريق أوامر بسيطة مثل "غير لون الزر" أو "أضف خدمة جديدة".</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>كيف تضمنون أمن بيانات مرضاي؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نستخدم تشفير AES-256 (نفس تشفير البنوك)، خوادم آمنة، ونسخ احتياطية يومية. كما نلتزم بمعايير HIPAA العالمية لحماية البيانات الطبية.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>ماذا يحدث إذا لم يعجبني النظام؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>ببساطة لا تدفع. نمنحك أسبوعاً كاملاً لتجربة النظام في عيادتك. إذا لم يعجبك، لا تدفع أي مبلغ وتحتفظ بكل حقوقك.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>هل النظام متاح باللغة العربية فقط؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>النظام متاح باللغتين العربية والإنجليزية، مع إمكانية إضافة أي لغة أخرى تحتاجها عيادتك.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>كم تستغرق عملية التطوير؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>7-10 أيام عمل حسب حجم العيادة والمميزات المطلوبة. لكنك تشاهد التقدم يومياً على Replit.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>هل تقدمون دعم ما بعد البيع؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>نعم، جميع الباقات تشمل فترة دعم مجانية (30-90 يوم حسب الباقة). بعدها نقدم باقات دعم مرنة تبدأ من $50 شهرياً.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم CTA النهائي -->
+    <section id="cta" class="final-cta">
+        <div class="container fade-in">
+            <h2>جاهز لتحويل عيادتك إلى عيادة ذكية؟</h2>
+            <p>انضم لأكثر من 50 عيادة في الخليج استفادت من نظامنا. ابدأ الآن بدون أي مخاطرة مالية.</p>
+            
+            <div style="margin-top: 50px;">
+                <a href="https://replit.com/refer/badraldien111" target="_blank" class="cta-button" style="font-size: 1.2rem; padding: 18px 40px; background-color: white; color: var(--primary);">
+                    <i class="fas fa-play-circle"></i> ابدأ مجاناً الآن
+                </a>
+                <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">التسجيل يستغرق 60 ثانية فقط</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>عن نظام عيادتي الذكية</h3>
+                    <p style="color: #bdc1c6; line-height: 1.8;">نظام حجز مواعيد مخصص للعيادات في الخليج، نقدم حلاً تقنياً ذكياً يضع رضا العميل أولاً ويدفع فقط بعد الرضا التام.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">المميزات</a></li>
+                        <li><a href="#how-it-works">كيف يعمل</a></li>
+                        <li><a href="#pricing">الباقات</a></li>
+                        <li><a href="#faq">الأسئلة الشائعة</a></li>
+                        <li><a href="https://asset-management--badraldien111.replit.app" target="_blank">شاهد النظام يعمل</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>تواصل معنا</h3>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> badraldien111@gmail.com</p>
+                        <p><i class="fas fa-phone"></i> (للعملاء المسجلين فقط)</p>
+                        <p><i class="fas fa-map-marker-alt"></i> نخدم جميع دول الخليج العربي</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2023 نظام عيادتي الذكية. جميع الحقوق محفوظة. | مصمم خصيصاً للعيادات في الخليج العربي</p>
+                <p style="margin-top: 10px; font-size: 0.8rem;">نظام آمن، سهل، ومخصص 100% لعيادتك</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // تفعيل الأسئلة الشائعة
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+        
+        // تأثير الظهور التدريجي
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        // مراقبة العناصر لتطبيق تأثير الظهور
+        document.querySelectorAll('.feature-card, .step, .pricing-card').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // تنعيم التمرير للروابط الداخلية
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // إضافة مؤثرات إضافية عند التمرير
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+                navbar.style.padding = '10px 0';
+            } else {
+                navbar.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+                navbar.style.padding = '15px 0';
+            }
+        });
+        
+        // رسالة ترحيب عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            console.log('🚀 صفحة نظام عيادتي الذكية جاهزة!');
+            console.log('📞 للاستفسارات: badraldien111@gmail.com');
+        });
+    </script>
+</body>
+</html>
